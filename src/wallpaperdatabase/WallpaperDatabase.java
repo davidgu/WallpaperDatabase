@@ -56,42 +56,15 @@ public class WallpaperDatabase {
     }
     
     
-    static ArrayList<String> parseForImgur(String htmlData){
-        ArrayList<String> imgurUrls = new ArrayList<>();
+    static Set<String> parseForImgur(String htmlData){  //Uses Set collection to avoid duplicates
+        Set<String> imgurUrls = new HashSet<>();
         
         Pattern imgurUrl = Pattern.compile("(http:\\/\\/i.imgur.com\\/[^a]......[^/]...)|(https:\\/\\/i.imgur.com\\/[^a]......[^/]...)|(http:\\/\\/imgur.com\\/[^a]......[^/]...)|(https:\\/\\/imgur.com\\/[^a]......[^/]...)");
+        Matcher matchedUrls = imgurUrl.matcher(htmlData);
+        matchedUrls.find();
         
-        String[] splitData = htmlData.split("data-href-url=\"");
-        
-        for(int i = 0; i<splitData.length; i++){
-            imgurUrls.add(splitData[i]);
-        }
-        
-        System.out.println("Split input html");
-        
-        for(int i = 0; i<imgurUrls.size(); i++){
-            if(!((imgurUrls.get(i).substring(0, 17)).equals("http://i.imgur.com"))||!((imgurUrls.get(i).substring(0, 15)).equals("http://imgur.com"))){ //If arraylist entry is not an imgur url, remove
-                imgurUrls.remove(i);
-            }
-        }
-        
-        for(int i = 0; i<imgurUrls.size(); i++){
-            if((imgurUrls.get(i).substring(0,20)).equals("http://i.imgur.com/a/")||(imgurUrls.get(i).substring(0,21)).equals("https://i.imgur.com/a/")||(imgurUrls.get(i).substring(0,18)).equals("http://imgur.com/a/")||(imgurUrls.get(i).substring(0,19)).equals("https://imgur.com/a/")){ //Remove albums
-                imgurUrls.remove(i);
-            }
-        }
-        
-        for(int i = 0; i<imgurUrls.size(); i++){
-            if((imgurUrls.get(i).substring(0,26)).equals("http://i.imgur.com/gallery/")||(imgurUrls.get(i).substring(0,27)).equals("https://i.imgur.com/gallery/")||(imgurUrls.get(i).substring(0,24)).equals("http://imgur.com/gallery/")||(imgurUrls.get(i).substring(0,25)).equals("https://imgur.com/gallery/")){ //Remove galleries
-                imgurUrls.remove(i);
-            }
-        }
-        
-        System.out.println("Removed extra data.");
-        
-        for(int i = 0; i<imgurUrls.size(); i++){
-            imgurUrls.set(i, imgurUrls.get(i).substring(0, 30));  //set imgurUrls entry to raw imgur url //imgur url is 30 characters long
-            System.out.println(imgurUrls.get(i));
+        while(matchedUrls.find()){
+            imgurUrls.add(matchedUrls.group());
         }
         
         System.out.println("Removed all characters but imgur urls");

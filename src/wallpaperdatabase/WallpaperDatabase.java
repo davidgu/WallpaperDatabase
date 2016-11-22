@@ -128,6 +128,16 @@ public class WallpaperDatabase {
         String fileName = Integer.toString(fileIndex);
         WallpaperDatabase.fileIndex++;
         return fileName;
+
+    }
+
+    static void loadConfig(Config toLoad){
+
+    }
+
+    static void install(){
+        File dir = new File(System.getProperty("user.home")+"\\WallpaperDatabase");
+        dir.mkdir();
     }
     
 }

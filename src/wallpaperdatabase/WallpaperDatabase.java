@@ -23,20 +23,21 @@ public class WallpaperDatabase {
     /**
      * @param args the command line arguments
      */
-    
+
     static int fileIndex = 0;
+    static String INSTALL_DIRECTORY = System.getProperty("user.home")+"\\WallpaperDatabase";
+    static Set<String> wallpaperUrls = new HashSet<>();
     
     public static void main(String[] args) {
         // TODO code application logic here
-        
-        Set<String> wallpaperUrls = new HashSet<>();
-        
         
         System.out.println("Wallpaper Database V1.0.0");
         System.out.println("0. Shutdown Program"+"\n"+
                 "1. Refresh URL Data"+"\n"+
                 "2. Download images"+"\n"+
-                "3. Analyze Images");
+                "3. Analyze Images"+"\n"+
+                "8. Save Data and Exit"+"\n"+
+                "9. Install WallpaperDatabase");
         
         Scanner sc = new Scanner(System.in);
         
@@ -57,7 +58,17 @@ public class WallpaperDatabase {
                     Iterator urlIterator = wallpaperUrls.iterator();
                     downloadImage(urlIterator.next().toString());
                     System.out.println("Image Downloaded");
-                
+                    break;
+
+                case 8:
+                    saveConfig();
+                    break;
+
+                case 9:
+                    install();
+                    System.out.println("WallpaperDatabase Installed");
+                    break;
+
                 default:
                     break;
             }
@@ -109,7 +120,8 @@ public class WallpaperDatabase {
         try{
             URL url = new URL(stringUrl);
             image = ImageIO.read(url);
-            File imageFile = new File(getFileName().concat(".").concat(getFileFormat(stringUrl)));
+            String imageName = getFileName().concat(".").concat(getFileFormat(stringUrl));
+            File imageFile = new File(INSTALL_DIRECTORY+"\\downloads"+imageName);
             imageFile.createNewFile();
             System.out.println(imageFile.getAbsolutePath());
             ImageIO.write(image, getFileFormat(stringUrl), imageFile);
@@ -133,11 +145,46 @@ public class WallpaperDatabase {
 
     static void loadConfig(Config toLoad){
 
+        Config config = null;  //Declaration outside of try/catch for visibility.
+
+        try{
+            FileInputStream fileIn = new FileInputStream(INSTALL_DIRECTORY+"\\config.ser");     //Logical fallacy, cannot get INSTALL_DIRECTORY
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);                         //without having loaded config. Possibly use
+            config = (Config) objectIn.readObject();                                            //text file in same dir as .jar
+            objectIn.close();
+            fileIn.close();
+        }
+        catch(Exception e){
+            System.out.println(e.toString());
+        }
+
+        fileIndex = config.getFileIndex();
+        INSTALL_DIRECTORY = config.getINSTALL_DIRECTORY();
+        wallpaperUrls = config.getWallpaperUrls();
+    }
+
+    static void saveConfig(){
+        Config config = new Config(wallpaperUrls, INSTALL_DIRECTORY, fileIndex);
+
+        try{
+            FileOutputStream fileOut = new FileOutputStream(INSTALL_DIRECTORY);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(config);
+            objectOut.close();
+            fileOut.close();
+        }
+        catch(Exception e){
+            System.out.println(e.toString());
+        }
+
     }
 
     static void install(){
-        File dir = new File(System.getProperty("user.home")+"\\WallpaperDatabase");
+        File dir = new File(INSTALL_DIRECTORY);
         dir.mkdir();
+
+        File downloads = new File(INSTALL_DIRECTORY+"\\downloads");
+        downloads.mkdir();
     }
     
 }

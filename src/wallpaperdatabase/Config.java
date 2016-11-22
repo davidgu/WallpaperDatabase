@@ -11,16 +11,26 @@ import java.util.Set;
 public class Config implements Serializable{
 
         private Set<String> wallpaperUrls = new HashSet<>();
-/*
-        public int saveConfig(String installPath){
+        private String INSTALL_DIRECTORY = "";
+        private int fileIndex;
 
+        Config(Set<String> wallpaperUrls, String INSTALL_DIRECTORY, int fileIndex ){
+                this.wallpaperUrls = wallpaperUrls;
+                this.INSTALL_DIRECTORY = INSTALL_DIRECTORY;
+                this.fileIndex = fileIndex;
         }
 
-        public Config loadConfig(String installPath){
-
+        public Set<String> getWallpaperUrls(){
+                return wallpaperUrls;
         }
-    }
-    */
+
+        public String getINSTALL_DIRECTORY(){
+                return INSTALL_DIRECTORY;
+        }
+
+        public int getFileIndex(){
+                return fileIndex;
+        }
 
 
 }
